@@ -1,5 +1,6 @@
 package view;
 
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -10,7 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class LoginScreen {
+public class LoginScreen extends Stage {
 
 	private BorderPane root;
 	private Label userLabel;
@@ -21,9 +22,10 @@ public class LoginScreen {
 	private VBox center;
 	private LoginButtonListener loginButtonListener;
 	
-	public LoginScreen(Stage stage) {
+	public LoginScreen() {
+		
 		root = new BorderPane();
-		stage.setTitle("Login");
+		this.setTitle("Login");
 		
 		userLabel = new Label("Username: ");
 		userField = new TextField();
@@ -50,18 +52,19 @@ public class LoginScreen {
 			}
 		});
 		
-		stage.setScene(new Scene(root, 600, 200));
-		stage.show();
+		this.setScene(new Scene(root, 500, 200));
+		this.show();
 	}
 	public void setLoginButtonListener(LoginButtonListener okButtonListener){
 		this.loginButtonListener = okButtonListener;
 	}
-	
 	public void setUserField(String name) {
 		userField.clear();
 		userField.setText(name);
+		passwordField.clear();
 	}
 	
+
 }
 
 

@@ -1,0 +1,16 @@
+package view;
+
+import java.util.EventObject;
+
+public class SainReportButtonEventObject extends EventObject{
+	
+	// Make it so that its sends the credentials of the person to the controller (depending on STATUS) 
+	// to create the Sain View
+	
+	public SainReportButtonEventObject(Object source) {
+		super(source);
+	}
+
+	
+	
+}

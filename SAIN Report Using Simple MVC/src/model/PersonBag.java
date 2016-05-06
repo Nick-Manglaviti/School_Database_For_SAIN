@@ -30,10 +30,12 @@ public class PersonBag {
 		        Person p = (Person)pair.getValue();
 		        if(p.getUsername().equals(username) && p.getPassword().equals(password)) {
 		        	return p;
-		        } else {
-		        	entry.remove(); // avoids a ConcurrentModificationException
-		        }
+		        } 
 		    }
 			return null;
+		}
+		
+		public Person searchById(int id) {
+			return people.get(id);
 		}
 }
