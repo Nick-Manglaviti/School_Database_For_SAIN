@@ -1,7 +1,11 @@
 package controller;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
+import model.CoursesTaken;
 import model.Person;
 import model.PersonBag;
 import model.Student;
@@ -21,23 +25,31 @@ public class MainWindowController {
 		@Override
 		public void sainReportButtonClicked(SainReportButtonEventObject ev) {
 			if(personModel instanceof Student) {
+				// Set Header
+				String header = new String("Sain Report for " + personModel.getfName()+ " " + personModel.getlName());
+				mainWindow.setHeaderL(header);
+				
 				mainWindow.setProgramT(((Student) personModel).getProgram());
 				mainWindow.setDegreeT(((Student) personModel).getDegree().getTitle());
 				mainWindow.setMajorT(((Student) personModel).getMajor().getName());
 				mainWindow.setCumulativeGPAT(((Student) personModel).getCumulativeGpa());
 				mainWindow.setPGPAT(((Student) personModel).getProgramGPA());
 				mainWindow.setMGPAT(((Student) personModel).getMajorGPA());
-				TableView reqCTV;
-				TableView otherCTV;
-				TableView withdrawCTV;
-				TableView currentCTV;
-				TableView neededC;
+				mainWindow.setCampusT(((Student) personModel).getCampus());;
+				
+				ListView<String> list = new ListView<String>();
+				ObservableList<String> items =FXCollections.observableArrayList (((Student) personModel).getCourses().toString() );
+				mainWindow.getReqCTV().setItems(items);;
+				
+				ListView otherCTV;
+				ListView withdrawCTV;
+				ListView currentCTV;
+				ListView neededC;
 				mainWindow.setMinGPAshow(((Student) personModel).getMajor().getMinGPA());
 				mainWindow.setTotalCredsshow(((Student) personModel).getMajor().getTotalCredit());
 				mainWindow.setMinNumshow(((Student) personModel).getDegree().getMinDegreeCred());
-				mainWindow.setTotalCredsTakenshow();
-				mainWindow.setTotalTransferCredsshow();
-				mainWindow.setTotalCredsDegshow();
+				mainWindow.disableTextFields();
+				mainWindow.createSain();
 			}
 		}
     	});

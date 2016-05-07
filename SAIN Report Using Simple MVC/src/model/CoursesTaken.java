@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Arrays;
+
 public class CoursesTaken extends Course {
 
 	// Data Fields
@@ -24,6 +26,14 @@ public class CoursesTaken extends Course {
 	public CoursesTaken() {
 		// No Argument Constructor
 	}
+	@Override
+	public String toString() {
+		return super.toString() + " " + grade;
+	}
+	
+	
+	
+	
 	
 	
 	

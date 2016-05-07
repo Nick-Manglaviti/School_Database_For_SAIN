@@ -1,6 +1,9 @@
 package application;
 	
 
+import java.util.ArrayList;
+import java.util.List;
+
 import controller.LoginWindowController;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -38,7 +41,9 @@ public class Main extends Application {
 		
 		Major major = new Major("ComputerScience", null, 2.0, 65.5); 
 		
-		CoursesTaken[] coursesArray = {mycourse1,mycourse2};
+		List<CoursesTaken> coursesArray = new ArrayList();
+		coursesArray.add(mycourse1);
+		coursesArray.add(mycourse2);
 		
 		Student st = new Student("Nick", "Manglaviti", 12345, "Mangn96",
 				"123", "641-283-8030", "10 Juniper Lane", "Ammerman",

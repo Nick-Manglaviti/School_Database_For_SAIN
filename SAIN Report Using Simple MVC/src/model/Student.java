@@ -1,12 +1,14 @@
 package model;
 
+import java.util.List;
+
 public class Student extends Person {
 
 	//Data Fields
 	private String program;
 	private Degree degree;
 	private Major major;
-	private CoursesTaken[] courses;
+	private List<CoursesTaken> courses;
 	private double cumulativeGpa;
 	private double majorGPA;
 	private double programGPA;
@@ -30,10 +32,11 @@ public class Student extends Person {
 	public void setMajor(Major major) {
 		this.major = major;
 	}
-	public CoursesTaken[] getCourses() {
+	
+	public List<CoursesTaken> getCourses() {
 		return courses;
 	}
-	public void setCourses(CoursesTaken[] courses) {
+	public void setCourses(List<CoursesTaken> courses) {
 		this.courses = courses;
 	}
 	public double getCumulativeGpa() {
@@ -58,7 +61,7 @@ public class Student extends Person {
 	//Constructors
 	public Student(String fName, String lName, int id, String username,
 			String password, String phone, String address, String campus,
-			String program, Degree degree, Major major, CoursesTaken[] courses,
+			String program, Degree degree, Major major, List<CoursesTaken> courses,
 			double cumulativeGpa, double majorGPA, double programGPA) {
 		super(fName, lName, id, username, password, phone, address, campus);
 		this.program = program;
@@ -77,6 +80,7 @@ public class Student extends Person {
 	public Student() {
 		// No Argument Constructor
 	}
+
 	
 	
 	

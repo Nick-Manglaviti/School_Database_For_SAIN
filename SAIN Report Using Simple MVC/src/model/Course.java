@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Arrays;
+
 public class Course {
 
 	// Data Fields
@@ -52,6 +54,12 @@ public class Course {
 	}
 	public Course() {
 		// No Argument Constructor
+	}
+	@Override
+	public String toString() {
+		return  courseName + ", CRN: " + courseCRN
+				+ "PreReqs: " + Arrays.toString(preReq) + ", Credits: "
+				+ credits + ", Subject" + subject + "]";
 	}
 	
 	
