@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class PersonBag {
 
-		final HashMap<Integer, Person> people = new HashMap<Integer, Person>();
+		private HashMap<Integer, Person> people = new HashMap<Integer, Person>();
 
 		// Two ways of adding people to the HashMap
 		public void addPerson(Person p){ 

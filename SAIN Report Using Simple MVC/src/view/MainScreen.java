@@ -48,7 +48,7 @@ public class MainScreen extends Stage {
 	private VBox summaryRightTextFieldsBox = new VBox();
 	
 	// Bottom Box
-	private VBox bottom = new VBox();
+	private HBox bottom = new HBox();
 	
 	// Buttons 
 	private Button sainReportButton = new Button("Generate Sain Report");
@@ -238,6 +238,30 @@ public class MainScreen extends Stage {
 	
 	
 
+	public SearchButtonListener getSearchButtonListener() {
+		return searchButtonListener;
+	}
+
+	public void setSearchButtonListener(SearchButtonListener searchButtonListener) {
+		this.searchButtonListener = searchButtonListener;
+	}
+
+	public SaveButtonListener getSaveButtonListener() {
+		return SaveButtonListener;
+	}
+
+	public void setSaveButtonListener(SaveButtonListener saveButtonListener) {
+		SaveButtonListener = saveButtonListener;
+	}
+
+	public SainReportButtonListener getSainReportButtonListener() {
+		return sainReportButtonListener;
+	}
+
+	public WhatIfButtonListener getWhatIfButtonListener() {
+		return whatIfButtonListener;
+	}
+
 	public Button getSainReportButton() {
 		return sainReportButton;
 	}
@@ -261,7 +285,7 @@ public class MainScreen extends Stage {
 	public Button getSaveButton() {
 		return saveButton;
 	}
-	public VBox getBottom() {
+	public HBox getBottom() {
 		return bottom;
 	}
 
@@ -318,7 +342,7 @@ public class MainScreen extends Stage {
 	public void setSainReportButton(Button sainReportButton) {
 		this.sainReportButton = sainReportButton;
 	}
-	public void setBottom(VBox bottom) {
+	public void setBottom(HBox bottom) {
 		this.bottom = bottom;
 	}
 	public void setProgramL(Label programL) {

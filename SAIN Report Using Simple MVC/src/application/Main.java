@@ -11,8 +11,10 @@ import model.Administrator;
 import model.Course;
 import model.CoursesTaken;
 import model.Degree;
+import model.DegreeBag;
 import model.Faculty;
 import model.Major;
+import model.MajorBag;
 import model.Person;
 import model.PersonBag;
 import model.Student;
@@ -110,8 +112,13 @@ public class Main extends Application {
 		
 		Degree degreeAS = new Degree("AS", asMajors, 30);
 		Degree degreeAA = new Degree("AA", aaMajors, 30);
+		DegreeBag allDegrees = new DegreeBag();
+		allDegrees.addDegree(degreeAS);
 		
-		
+		MajorBag allMajors = new MajorBag();
+		allMajors.getMajors().add(major1);
+		allMajors.getMajors().add(major2);
+		allMajors.getMajors().add(major3);
 		
 		
 		
@@ -135,7 +142,7 @@ public class Main extends Application {
 		personbag.addPerson(fac);
 		personbag.addPerson(admin);
 		
-		LoginWindowController controller = new LoginWindowController(personbag, loginWindow);
+		LoginWindowController controller = new LoginWindowController(personbag, allMajors, allDegrees, loginWindow);
 	}
 
 

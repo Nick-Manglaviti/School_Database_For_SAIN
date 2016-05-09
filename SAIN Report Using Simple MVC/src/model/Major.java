@@ -61,6 +61,11 @@ public class Major {
 		// No Argument Constructor
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
+
 	
 	
 	
