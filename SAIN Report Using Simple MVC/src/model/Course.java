@@ -1,13 +1,13 @@
 package model;
 
-import java.util.Arrays;
+
 
 public class Course {
 
 	// Data Fields
 	private String courseName;
-	private String courseCRN;
-	private Course[] preReq;
+	private String courseNum;
+	private String coursetype;
 	private double credits;
 	private String subject;
 	
@@ -18,17 +18,18 @@ public class Course {
 	public void setCourseName(String courseName) {
 		this.courseName = courseName;
 	}
-	public String getCourseCRN() {
-		return courseCRN;
+	public String getCourseNum() {
+		return courseNum;
 	}
-	public void setCourseCRN(String courseCRN) {
-		this.courseCRN = courseCRN;
+	
+	public String getCoursetype() {
+		return coursetype;
 	}
-	public Course[] getPreReq() {
-		return preReq;
+	public void setCoursetype(String coursetype) {
+		this.coursetype = coursetype;
 	}
-	public void setPreReq(Course[] preReq) {
-		this.preReq = preReq;
+	public void setCourseNum(String courseNum) {
+		this.courseNum = courseNum;
 	}
 	public double getCredits() {
 		return credits;
@@ -44,24 +45,26 @@ public class Course {
 	}
 	
 	// Constructors
-	public Course(String courseName, String courseCRN, Course[] preReq,
+	public Course(String courseName, String courseNum, String coursetype,
 			double credits, String subject) {
 		this.courseName = courseName;
-		this.courseCRN = courseCRN;
-		this.preReq = preReq;
+		this.courseNum = courseNum;
+		this.coursetype = coursetype;
 		this.credits = credits;
 		this.subject = subject;
 	}
 	public Course() {
 		// No Argument Constructor
 	}
-	@Override
-	public String toString() {
-		return  courseName + ", CRN: " + courseCRN
-				+ "PreReqs: " + Arrays.toString(preReq) + ", Credits: "
-				+ credits + ", Subject" + subject + "]";
+	
+	public String toStringForCurrent() {
+		return  "Subj: " + subject + " " + getCourseNum() + ", Counts: ";
 	}
 	
+	public String toStringForNeeded() {
+		return "Subj: " + getSubject() + " " + getCourseNum() + "     "
+				+ courseName + "  Area Req: " + getCoursetype() + "     Credits: " + credits;
+	}
 	
 	
 }

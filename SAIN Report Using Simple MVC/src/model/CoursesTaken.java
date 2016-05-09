@@ -1,6 +1,6 @@
 package model;
 
-import java.util.Arrays;
+
 
 public class CoursesTaken extends Course {
 
@@ -18,17 +18,28 @@ public class CoursesTaken extends Course {
 	
 	
 	// Constructors
-	public CoursesTaken(String courseName, String courseCRN, Course[] preReq,
+	public CoursesTaken(String courseName, String courseNum, String coursetype,
 			double credits, String subject, String grade) {
-		super(courseName, courseCRN, preReq, credits, subject);
+		super(courseName, courseNum, coursetype, credits, subject);
 		this.grade = grade;
 	}
 	public CoursesTaken() {
 		// No Argument Constructor
 	}
-	@Override
-	public String toString() {
-		return super.toString() + " " + grade;
+	
+	public String toStringForRequired() {
+		return "Subj: " + getSubject() + " " + getCourseNum() + "     Grade: "
+				+ grade + "  Area Req: " + getCoursetype();
+	}
+	
+	public String toStringForOther() {
+		return "Subj: " + getSubject() + " " + getCourseNum() + "     Grade: "
+				+ grade;
+	}
+	
+	public String toStringForFailed() {
+		return "Subj: " + getSubject() + " " + getCourseNum() + "     Grade: "
+				+ grade;
 	}
 	
 	

@@ -1,9 +1,12 @@
 package model;
 
+import java.util.List;
+
 public class Major {
 
 	private String name;
-	private Course[] courses;
+	private List<Course> coursesList;
+	private List<String> typesArray;
 	private double minGPA;
 	private double totalCredit;
 	
@@ -11,14 +14,25 @@ public class Major {
 	public String getName() {
 		return name;
 	}
+	
+	public List<Course> getCoursesList() {
+		return coursesList;
+	}
+
+	public void setCoursesList(List<Course> coursesList) {
+		this.coursesList = coursesList;
+	}
+
+	public List<String> getTypesArray() {
+		return typesArray;
+	}
+
+	public void setTypesArray(List<String> subArray) {
+		this.typesArray = subArray;
+	}
+
 	public void setName(String name) {
 		this.name = name;
-	}
-	public Course[] getCourses() {
-		return courses;
-	}
-	public void setCourses(Course[] courses) {
-		this.courses = courses;
 	}
 	public double getMinGPA() {
 		return minGPA;
@@ -34,15 +48,20 @@ public class Major {
 	}
 	
 	// Constructors
-	public Major(String name, Course[] courses, double minGPA, double totalCredit) {
+	public Major(String name, List<Course> coursesList, List<String> typesArray,
+			double minGPA, double totalCredit) {
+		super();
 		this.name = name;
-		this.courses = courses;
+		this.coursesList = coursesList;
+		this.typesArray = typesArray;
 		this.minGPA = minGPA;
 		this.totalCredit = totalCredit;
 	}
 	public Major() {
 		// No Argument Constructor
 	}
+
+	
 	
 	
 }

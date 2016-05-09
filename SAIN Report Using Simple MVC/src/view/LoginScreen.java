@@ -45,8 +45,7 @@ public class LoginScreen extends Stage {
 		loginButton.setOnAction(e -> {
 			String user = userField.getText();
 			String password = passwordField.getText();
-			LoginButtonEventObject ev = 
-					new LoginButtonEventObject(this, user, password);
+			LoginButtonEventObject ev = new LoginButtonEventObject(this, user, password);
 			if (loginButtonListener != null) {
 				loginButtonListener.loginButtonClicked(ev);
 			}

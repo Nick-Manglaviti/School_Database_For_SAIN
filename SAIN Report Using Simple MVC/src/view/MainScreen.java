@@ -17,45 +17,49 @@ public class MainScreen extends Stage {
 	// All the Boxes
 	
 	// Root
-	private BorderPane root;
+	private BorderPane root = new BorderPane();
 	
 	//Top Pane
-	private VBox topPane;
-	private HBox headerBox;
-	private HBox infoBox;
-	private VBox infoLabelBox;
-	private VBox infoTextFieldBox;
+	private VBox topPane = new VBox();
+	private HBox headerBox= new HBox();
+	private HBox infoBox = new HBox();
+	private VBox infoLabelBox = new VBox();
+	private VBox infoTextFieldBox = new VBox();
 	
 	
 	// Center Pane
-	private VBox centerPane;
+	private VBox centerPane = new VBox();
 	// Courses Taken Views
-	private HBox coursesTakenBox; 
-	private VBox rctBox;	//Required Courses Taken
-	private VBox octBox;	// Other Courses Taken
-	private VBox cwfBox;	// Courses Withdrawn/Failed
-	private VBox ccBox;		//Current Courses taking Box 
+	private HBox coursesTakenBox = new HBox(); 
+	private VBox rctBox = new VBox();	//Required Courses Taken
+	private VBox octBox = new VBox();	// Other Courses Taken
+	private VBox cwfBox = new VBox();	// Courses Withdrawn/Failed
+	private VBox ccBox = new VBox();		//Current Courses taking Box 
 	// Courses Needed
-	private HBox coursesNeededBox;
-	private VBox cnBox;
+	private HBox coursesNeededBox = new HBox();
+	private VBox cnBox = new VBox();
 	// Summary Box
-	private HBox summaryBox;
-	private VBox summaryLeftBox;
-	private VBox summaryLeftLabelsBox;
-	private VBox summaryLeftTextFieldsBox;
-	private VBox summaryRightBox;
-	private VBox summaryRightLabelsBox;
-	private VBox summaryRightTextFieldsBox;
+	private HBox summaryBox = new HBox();
+	private HBox summaryLeftBox = new HBox();
+	private VBox summaryLeftLabelsBox = new VBox();
+	private VBox summaryLeftTextFieldsBox = new VBox();
+	private HBox summaryRightBox = new HBox();
+	private VBox summaryRightLabelsBox = new VBox();
+	private VBox summaryRightTextFieldsBox = new VBox();
 	
 	// Bottom Box
-	private VBox bottom;
+	private VBox bottom = new VBox();
 	
 	// Buttons 
-	private Button whatIfButton;
-	private Button sainReportButton;
+	private Button sainReportButton = new Button("Generate Sain Report");
+	private Button searchButton = new Button("Search For Student");
+	private Button saveButton = new Button(" Save changes");
+	private Button whatIfButton = new Button("What If Analysis");
 	// Listeners
 	private SainReportButtonListener sainReportButtonListener;
 	private WhatIfButtonListener whatIfButtonListener;
+	private SearchButtonListener searchButtonListener;
+	private SaveButtonListener SaveButtonListener;
 	
 	
 	// Labels
@@ -75,6 +79,10 @@ public class MainScreen extends Stage {
 	private Label minGPA = new Label("Minimum GPA: ");
 	private Label totalCreds = new Label("Total Credits Required: ");
 	private Label minNum = new Label("Minimum Number of Degree Credits: ");
+	private Label totalCredsTakenC = new Label("Total Credits at SCCC");
+	private Label totalCreditsDegree = new Label("Total Credits Toward Degree: ");
+	private Label totalCredsTaken = new Label("Total Credits Taken: ");
+	
 	//TextFields
 	private TextField programT = new TextField();
 	private TextField degreeT = new TextField();
@@ -86,6 +94,9 @@ public class MainScreen extends Stage {
 	private TextField minGPAshow = new TextField();
 	private TextField totalCredsshow = new TextField();
 	private TextField minNumshow = new TextField();
+	private TextField totalCredsTakenCShow = new TextField();
+	private TextField totalCreditsDegreeShow = new TextField();
+	private TextField totalCredsTakenShow = new TextField();
 	//ListViews
 	private ListView reqCTV = new ListView();
 	private ListView otherCTV = new ListView();
@@ -97,19 +108,14 @@ public class MainScreen extends Stage {
 	
 	
 	public MainScreen() {
-		root = new BorderPane();
-		Stage mainStage = new Stage();
+		root = new BorderPane(); // Set the Root, the rest is made by controller 
+		Stage mainStage = new Stage(); // depending on the person Logged in
 		mainStage.setTitle("MySCCC Home Screen");
 		textFieldsResize();
-		
-		// bottom "TaskBar" for the main view
-		sainReportButton = new Button("My Sain");
-		whatIfButton = new Button("What If Analysis");
-		bottom = new VBox(10);
+		centerPane.setPadding(new Insets(10, 10, 10, 10));
+		centerPane.setAlignment(Pos.CENTER);
 		bottom.setPadding(new Insets(10, 10, 10, 10));
 		bottom.setAlignment(Pos.BASELINE_CENTER);
-		bottom.getChildren().addAll(sainReportButton, whatIfButton);
-		root.setBottom(bottom);
 		
 		// Button Action Handling
 		// SAIN Button
@@ -127,7 +133,20 @@ public class MainScreen extends Stage {
 			}
 		});
 		
-		mainStage.setScene(new Scene(root, 700, 700));
+		searchButton.setOnAction(e -> {
+			WhatIfButtonEventObject ev = new WhatIfButtonEventObject(this);
+			if (whatIfButtonListener != null) {
+				whatIfButtonListener.whatIfButtonClicked(ev);
+			}
+		});
+		saveButton.setOnAction(e -> {
+			WhatIfButtonEventObject ev = new WhatIfButtonEventObject(this);
+			if (whatIfButtonListener != null) {
+				whatIfButtonListener.whatIfButtonClicked(ev);
+			}
+		});
+		
+		mainStage.setScene(new Scene(root, 1000, 700));
 		mainStage.show();
 	}
 	
@@ -142,6 +161,9 @@ public class MainScreen extends Stage {
 		minGPAshow.setDisable(true);
 		totalCredsshow.setDisable(true);
 		minNumshow.setDisable(true);
+		totalCredsTakenCShow.setDisable(true);
+		totalCreditsDegreeShow.setDisable(true);
+		totalCredsTakenShow.setDisable(true);
 	}
 
 	
@@ -194,14 +216,20 @@ public class MainScreen extends Stage {
 		coursesNeededBox = new HBox();
 		coursesNeededBox.getChildren().addAll(rctBox, octBox, cwfBox, ccBox);
 		// Summary View
-		summaryLeftLabelsBox = new VBox();
+		summaryLeftLabelsBox = new VBox(8);
 		summaryLeftLabelsBox.getChildren().addAll(minGPA,totalCreds,minNum);
 		summaryLeftTextFieldsBox = new VBox();
 		summaryLeftTextFieldsBox.getChildren().addAll(minGPAshow,totalCredsshow,minNumshow);
-		summaryLeftBox = new VBox();
+		summaryLeftBox = new HBox();
 		summaryLeftBox.getChildren().addAll(summaryLeftLabelsBox, summaryLeftTextFieldsBox);
+		summaryRightLabelsBox = new VBox(8);
+		summaryRightLabelsBox.getChildren().addAll(totalCredsTakenC,totalCreditsDegree,totalCredsTaken);
+		summaryRightTextFieldsBox = new VBox();
+		summaryRightTextFieldsBox.getChildren().addAll(totalCredsTakenCShow,totalCreditsDegreeShow,totalCredsTakenShow);
+		summaryRightBox = new HBox();
+		summaryRightBox.getChildren().addAll(summaryRightLabelsBox, summaryRightTextFieldsBox);
 		summaryBox = new HBox();
-		summaryBox.getChildren().addAll(summaryLeftBox);
+		summaryBox.getChildren().addAll(summaryLeftBox, summaryRightBox);
 		centerPane = new VBox();
 		centerPane.getChildren().addAll(coursesTakenBox, coursesNeededBox, summaryBox);
 		root.setCenter(centerPane);
@@ -209,6 +237,65 @@ public class MainScreen extends Stage {
 	
 	
 	
+
+	public Button getSainReportButton() {
+		return sainReportButton;
+	}
+
+	public Button getWhatIfButton() {
+		return whatIfButton;
+	}
+
+	public void setSearchButton(Button searchButton) {
+		this.searchButton = searchButton;
+	}
+
+	public void setSaveButton(Button saveButton) {
+		this.saveButton = saveButton;
+	}
+
+	public Button getSearchButton() {
+		return searchButton;
+	}
+
+	public Button getSaveButton() {
+		return saveButton;
+	}
+	public VBox getBottom() {
+		return bottom;
+	}
+
+	public TextField getTotalCredsTakenCShow() {
+		return totalCredsTakenCShow;
+	}
+
+	public void setTotalCredsTakenCShow(String string) {
+		this.totalCredsTakenCShow.setText(string);
+	}
+
+	public TextField getTotalCreditsDegreeShow() {
+		return totalCreditsDegreeShow;
+	}
+
+	public void setTotalCreditsDegreeShow(String string) {
+		this.totalCreditsDegreeShow.setText(string);
+	}
+
+	public TextField getTotalCredsTakenShow() {
+		return totalCredsTakenShow;
+	}
+
+    public void setTotalCredsTakenShow(String string) {
+		this.totalCredsTakenShow.setText(string);
+	}
+
+	public ListView getNeededCV() {
+		return neededCV;
+	}
+
+	public void setNeededCV(ListView neededCV) {
+		this.neededCV = neededCV;
+	}
 
 	public void setHeaderL(String string) {
 		this.headerL.setText(string);
@@ -281,7 +368,7 @@ public class MainScreen extends Stage {
 	}
 
 	public void setCampusT(String string) {
-		majorT.setText(string);
+		campusT.setText(string);
 	}
 
 
@@ -335,24 +422,6 @@ public class MainScreen extends Stage {
 		String string = Double.toString(d);
 		minNumshow.setText(string);
 	}
-	public void setTotalCredsTaken(Label totalCredsTaken) {
-		this.totalCredsTaken = totalCredsTaken;
-	}
-	public void setTotalCredsTakenshow(Label totalCredsTakenshow) {
-		this.totalCredsTakenshow = totalCredsTakenshow;
-	}
-	public void setTotalTransferCreds(Label totalTransferCreds) {
-		this.totalTransferCreds = totalTransferCreds;
-	}
-	public void setTotalTransferCredsshow(Label totalTransferCredsshow) {
-		this.totalTransferCredsshow = totalTransferCredsshow;
-	}
-	public void setTotalCredsDeg(Label totalCredsDeg) {
-		this.totalCredsDeg = totalCredsDeg;
-	}
-	public void setTotalCredsDegshow(Label totalCredsDegshow) {
-		this.totalCredsDegshow = totalCredsDegshow;
-	}
-
+	
 	
 }
