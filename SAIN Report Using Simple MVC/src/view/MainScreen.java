@@ -2,6 +2,7 @@ package view;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -53,15 +54,17 @@ public class MainScreen extends Stage {
 	// Buttons 
 	private Button sainReportButton = new Button("Generate Sain Report");
 	private Button searchButton = new Button("Search For Student");
-	private Button saveButton = new Button(" Save changes");
+	private Button addCourseButton = new Button("Add Course");
 	private Button whatIfButton = new Button("What If Analysis");
 	private Button logoutButton = new Button("Logout");
+	private Button changeMajorButton = new Button("Change Student Major");
 	// Listeners
 	private SainReportButtonListener sainReportButtonListener;
 	private WhatIfButtonListener whatIfButtonListener;
 	private SearchButtonListener searchButtonListener;
-	private SaveButtonListener saveButtonListener;
+	private AddCourseButtonListener addCourseButtonListener;
 	private LogoutButtonListener logoutButtonListener;
+	private ChangeMajorButtonListener changeMajorButtonListener;
 	
 	
 	// Labels
@@ -138,16 +141,22 @@ public class MainScreen extends Stage {
 				searchButtonListener.searchButtonClicked(ev);
 			}
 		});
-		saveButton.setOnAction(e -> {
-			SaveButtonEventObject ev = new SaveButtonEventObject(this);
-			if (saveButtonListener != null) {
-				saveButtonListener.saveButtonClicked(ev);
+		addCourseButton.setOnAction(e -> {
+			AddCourseButtonEventObject ev = new AddCourseButtonEventObject(this);
+			if (addCourseButtonListener != null) {
+				addCourseButtonListener.addCourseButtonClicked(ev);
 			}
 		});
 		logoutButton.setOnAction(e -> {
 			LogoutButtonEventObject ev = new LogoutButtonEventObject(this);
 			if (logoutButtonListener != null) {
 				logoutButtonListener.logoutButtonClicked(ev);
+			}
+		});
+		changeMajorButton.setOnAction(e -> {
+			ChangeMajorButtonEventObject ev = new ChangeMajorButtonEventObject(this);
+			if (changeMajorButtonListener != null) {
+				changeMajorButtonListener.changeMajorButtonClicked(ev);
 			}
 		});
 		
@@ -244,6 +253,23 @@ public class MainScreen extends Stage {
 	
 	
 
+	public Button getChangeMajorButton() {
+		return changeMajorButton;
+	}
+
+	public void setChangeMajorButton(Button changeMajorButton) {
+		this.changeMajorButton = changeMajorButton;
+	}
+
+	public ChangeMajorButtonListener getChangeMajorButtonListener() {
+		return changeMajorButtonListener;
+	}
+
+	public void setChangeMajorButtonListener(
+			ChangeMajorButtonListener changeMajorButtonListener) {
+		this.changeMajorButtonListener = changeMajorButtonListener;
+	}
+
 	public Stage getMainStage() {
 		return mainStage;
 	}
@@ -276,12 +302,12 @@ public class MainScreen extends Stage {
 		this.searchButtonListener = searchButtonListener;
 	}
 
-	public SaveButtonListener getSaveButtonListener() {
-		return saveButtonListener;
+	public AddCourseButtonListener getAddCourseButtonListener() {
+		return addCourseButtonListener;
 	}
 
-	public void setSaveButtonListener(SaveButtonListener saveButtonListener) {
-		saveButtonListener = saveButtonListener;
+	public void setAddCourseButtonListener(AddCourseButtonListener addCourseButtonListener) {
+		this.addCourseButtonListener = addCourseButtonListener;
 	}
 
 	public SainReportButtonListener getSainReportButtonListener() {
@@ -304,16 +330,16 @@ public class MainScreen extends Stage {
 		this.searchButton = searchButton;
 	}
 
-	public void setSaveButton(Button saveButton) {
-		this.saveButton = saveButton;
+	public void setAddCourseButton(Button addCourseButton) {
+		this.addCourseButton = addCourseButton;
 	}
 
 	public Button getSearchButton() {
 		return searchButton;
 	}
 
-	public Button getSaveButton() {
-		return saveButton;
+	public Button getAddCourseButton() {
+		return addCourseButton;
 	}
 	public HBox getBottom() {
 		return bottom;
@@ -469,6 +495,10 @@ public class MainScreen extends Stage {
 		String string = Double.toString(d);
 		minNumshow.setText(string);
 	}
+
+	
+
+
 	
 	
 }

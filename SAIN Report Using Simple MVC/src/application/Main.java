@@ -1,14 +1,7 @@
 package application;
 	
 
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +10,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import model.Administrator;
 import model.Course;
+import model.CourseBag;
 import model.CoursesTaken;
 import model.Degree;
 import model.DegreeBag;
@@ -51,8 +45,9 @@ public class Main extends Application {
 		CoursesTaken mycourse4 = new CoursesTaken("Engineering", "101", "Other", 4.0, "ENS", "A");
 		CoursesTaken mycourse5 = new CoursesTaken("Modern Biology", "150", "Laboratory Science", 4.0, "BIO", "W");
 		CoursesTaken mycourse6 = new CoursesTaken("Advanced Programming in Java", "242", "Computer Science", 4.0, "CST", "IP");
-		CoursesTaken mycourse8 = new CoursesTaken("Holocaust", "131", "Humanities", 4.0, "HUM", "A");
+		CoursesTaken mycourse8 = new CoursesTaken("Holocaust", "131", "Humanities Eel", 4.0, "HUM", "A");
 		CoursesTaken mycourse9 = new CoursesTaken("Computer Artitechure", "222", "Computer Science", 4.0, "CST", "IP");
+		CoursesTaken otherCourse = new CoursesTaken("Psychology of the Human Brain", "226", "Psychology", 4.0, "PSY", "C");
 		List<CoursesTaken> coursesArray = new ArrayList<CoursesTaken>();
 		coursesArray.add(mycourse1);
 		coursesArray.add(mycourse2);
@@ -62,7 +57,10 @@ public class Main extends Application {
 		coursesArray.add(mycourse6);
 		coursesArray.add(mycourse8);
 		coursesArray.add(mycourse9);
-
+		
+		List<CoursesTaken> coursesArray2 = new ArrayList<CoursesTaken>();
+		coursesArray2.add(mycourse8);
+		coursesArray2.add(otherCourse);
 		
 		Course course1 = new Course("Data Structures", "246", "Computer Science", 4.0, "CST");
 		Course course2 = new Course("Physics I", "130", "Laboratory Science", 4.0, "PHY");
@@ -73,6 +71,18 @@ public class Main extends Application {
 		Course course7 = new Course("Discrete Math", "205", "Math", 4.0, "MAT");
 		Course course8 = new Course("Psychology of the Human Brain", "226", "Psychology", 4.0, "PSY");
 		Course course9 = new Course("The ID and Superego", "158", "Psychology", 3.0, "PSY");
+		Course course10 = new Course("Tennis for Experts", "31", "Physical Education", 3.0, "PED");
+		
+		CourseBag courseBag = new CourseBag();
+		courseBag.addCourse(course1);
+		courseBag.addCourse(course2);
+		courseBag.addCourse(course3);
+		courseBag.addCourse(course4);
+		courseBag.addCourse(course5);
+		courseBag.addCourse(course6);
+		courseBag.addCourse(course7);
+		courseBag.addCourse(course8);
+		courseBag.addCourse(course10);
 		
 		
 		List<Course> courses = new ArrayList<Course>();
@@ -140,6 +150,11 @@ public class Main extends Application {
 				"Computer Science A.S", degreeAS, major1, coursesArray,
 				3.5, 4.0, 4.0);
 		
+		Student st2 = new Student("Bad", "Student", 123, "hi",
+				"69", "641-283-8030", "10 Ghoster Lane", "Ammerman",
+				"Psychology A.A", degreeAA, major3, coursesArray2,
+				3.5, 4.0, 4.0);
+		
 		Faculty fac = new Faculty("Ben" , "Chen", 18753, "Lion Tamer",
 				"456", "1-800-Call-Me", "234 Bellows Lane", "Ammerman",
 				"Assistant Chair of Computer Science", 207);
@@ -150,10 +165,11 @@ public class Main extends Application {
 		
 		
 		personbag.addPerson(st);
+		personbag.addPerson(st2);
 		personbag.addPerson(fac);
 		personbag.addPerson(admin);
 		
-		LoginWindowController controller = new LoginWindowController(personbag, allMajors, allDegrees, loginWindow);
+		LoginWindowController controller = new LoginWindowController(personbag, allMajors, allDegrees, courseBag, loginWindow);
 	}
 
 

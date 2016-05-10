@@ -1,8 +1,0 @@
-Data Structures, 246, Computer Science, 4.0, CST, A
-Physics I, 130, Laboratory Science, 4.0, PHY, B
-Calculus 2, 142, Math Elective, 4.0, MAT, B
-Engineering, 101, Other, 4.0, ENS, A
-Modern Biology, 150, Laboratory Science, 4.0, BIO, W
-Advanced Programming in Java, 242, Computer Science, 4.0, CST, IP
-Discrete Math, 205, Math Elective, 4.0, MAT, IP
-Holocaust, 131, Humanities, 4.0, HUM, A

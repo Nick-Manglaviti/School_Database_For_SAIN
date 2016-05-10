@@ -14,6 +14,7 @@ import view.SearchButtonListener;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 import model.Administrator;
+import model.CourseBag;
 import model.DegreeBag;
 import model.Faculty;
 import model.MajorBag;
@@ -25,7 +26,7 @@ import model.Student;
 public class LoginWindowController {
 
 	
-	public LoginWindowController(PersonBag personbag, MajorBag majorBag, DegreeBag degreeBag, LoginScreen loginWindow) {
+	public LoginWindowController(PersonBag personbag, MajorBag majorBag, DegreeBag degreeBag, CourseBag courseBag, LoginScreen loginWindow) {
 		    // Login Window Button Events
 			loginWindow.setLoginButtonListener(new LoginButtonListener() {
 			@Override
@@ -37,29 +38,19 @@ public class LoginWindowController {
 			} else if (person instanceof Student){
 				loginWindow.close();
 				MainScreen main = new MainScreen();
-				MainWindowController mainController = new MainWindowController(personbag, majorBag, degreeBag, main, (Student)person);
+				MainWindowController mainController = new MainWindowController(personbag, majorBag, degreeBag, courseBag, main, (Student)person);
 				
 				} else if (person instanceof Administrator){ // this way the admin wont be confused as a regular Faculty
 					loginWindow.close();
-							TextInputDialog dialog = new TextInputDialog("Enter ID");
-							dialog.setTitle("Search Student");
-							dialog.setHeaderText("Please Enter the Student's ID");
-							dialog.setContentText("Search ID: ");
-
-							// Traditional way to get the response value.
-							Optional<String> result = dialog.showAndWait();
-
-							int id = Integer.parseInt(dialog.getResult());
-
-							Student originalStudent =  new Student();
+							
 					MainScreen main = new MainScreen();
-					MainWindowController mainController = new MainWindowController(personbag, majorBag, degreeBag, main, (Administrator)person);
+					MainWindowController mainController = new MainWindowController(personbag, majorBag, degreeBag, courseBag, main, (Administrator)person);
 					
 					} else if (person instanceof Faculty){
 						
 						loginWindow.close();
 						MainScreen main = new MainScreen();
-						MainWindowController mainController = new MainWindowController(personbag, majorBag, degreeBag, main, (Faculty)person);
+						MainWindowController mainController = new MainWindowController(personbag, majorBag, degreeBag, courseBag, main, (Faculty)person);
 						}
 			}
 		    });

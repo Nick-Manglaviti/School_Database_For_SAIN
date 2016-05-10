@@ -1,5 +1,6 @@
 package controller;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.VBox;
 import model.Administrator;
 import model.Course;
+import model.CourseBag;
 import model.CoursesTaken;
 import model.Degree;
 import model.DegreeBag;
@@ -26,6 +28,10 @@ import model.MajorBag;
 import model.Person;
 import model.PersonBag;
 import model.Student;
+import view.AddCourseButtonEventObject;
+import view.AddCourseButtonListener;
+import view.ChangeMajorButtonEventObject;
+import view.ChangeMajorButtonListener;
 import view.LoginScreen;
 import view.LogoutButtonEventObject;
 import view.LogoutButtonListener;
@@ -42,7 +48,7 @@ public class MainWindowController {
 	// Main Window Controller
 
 	public MainWindowController(PersonBag personbag, MajorBag majorBag,
-			DegreeBag degreeBag, MainScreen mainWindow, Student studentModel) {
+			DegreeBag degreeBag, CourseBag coursesBag, MainScreen mainWindow, Student studentModel) {
 		// If you are a Student Signing in, this is your Controller
 		// Bottom "TaskBar" for Student
 		createStudentTaskbar(mainWindow);
@@ -53,7 +59,7 @@ public class MainWindowController {
 				mainWindow.getMainStage().close();
 				LoginScreen newloginScreen = new LoginScreen();
 				LoginWindowController controller = new LoginWindowController(
-						personbag, majorBag, degreeBag, newloginScreen);
+						personbag, majorBag, degreeBag, coursesBag, newloginScreen);
 			}
 
 		});
@@ -109,8 +115,7 @@ public class MainWindowController {
 	}
 
 	public MainWindowController(PersonBag personbag, MajorBag majorBag,
-			DegreeBag degreeBag, MainScreen mainWindow,
-			Administrator adminModel) {
+			DegreeBag degreeBag, CourseBag coursesBag, MainScreen mainWindow, Administrator adminModel) {
 		// If you are a Administrator Signing in, this is your Controller
 		// Bottom "TaskBar" for Student
 		createAdminTaskbar(mainWindow);
@@ -121,7 +126,7 @@ public class MainWindowController {
 				mainWindow.getMainStage().close();
 				LoginScreen newloginScreen = new LoginScreen();
 				LoginWindowController controller = new LoginWindowController(
-						personbag, majorBag, degreeBag, newloginScreen);
+						personbag, majorBag, degreeBag, coursesBag, newloginScreen);
 			}
 
 		});
@@ -140,52 +145,128 @@ public class MainWindowController {
 
 				int id = Integer.parseInt(dialog.getResult());
 
-				Student newStudent = (Student) personbag.searchById(id);
-	
-				mainWindow.createSain();
-				fillFields(mainWindow, newStudent);
+				Student originalStudent = (Student) personbag.searchById(id);
 
-				System.out.println(newStudent.toString());
-
-			}
-		});
-	}
-
-	public MainWindowController(PersonBag personbag, MajorBag majorBag,
-			DegreeBag degreeBag, MainScreen mainWindow, Faculty facultyModel) {
-		// If you are a Faculty Signing in, this is your Controller
-		createFacultyTaskbar(mainWindow);
-
-		mainWindow.setLogoutButtonListener(new LogoutButtonListener() {
-			@Override
-			public void logoutButtonClicked(LogoutButtonEventObject ev) {
-				mainWindow.getMainStage().close();
-				LoginScreen newloginScreen = new LoginScreen();
-				LoginWindowController controller = new LoginWindowController(
-						personbag, majorBag, degreeBag, newloginScreen);
-			}
-
-		});
-
-		// searchButton
-		mainWindow.setSearchButtonListener(new SearchButtonListener() {
-			@Override
-			public void searchButtonClicked(SearchButtonEventObject ev) {
-				TextInputDialog dialog = new TextInputDialog("Enter ID");
-				dialog.setTitle("Search Student");
-				dialog.setHeaderText("Please Enter the Student's ID");
-				dialog.setContentText("Search ID: ");
-
-				// Traditional way to get the response value.
-				Optional<String> result = dialog.showAndWait();
-
-				int id = Integer.parseInt(dialog.getResult());
-
-				Student originalStudent =  (Student) personbag.searchById(id);
-				
-				
 				mainWindow.createSain();
 				fillFields(mainWindow, originalStudent);
+			}
+		});
+		
+		
+		// Add course
+		mainWindow.setAddCourseButtonListener(new AddCourseButtonListener() {
+			@Override
+			public void addCourseButtonClicked(AddCourseButtonEventObject ev) {
+				TextInputDialog dialogFS = new TextInputDialog("Enter ID");
+				dialogFS.setTitle("Search Student");
+				dialogFS.setHeaderText("Please Enter the Student's ID");
+				dialogFS.setContentText("Search ID: ");
+
+				// Traditional way to get the response value.
+				Optional<String> resultFS = dialogFS.showAndWait();
+
+				int id = Integer.parseInt(dialogFS.getResult());
+
+				Student originalStudent = (Student) personbag.searchById(id);
+
+				List<String> choices = new ArrayList<>();
+				for (int i = 0; i < coursesBag.getCourses().size(); i++) {
+					choices.add(coursesBag.getCourses().get(i).toStringForNeeded());
+				}
+
+				ChoiceDialog<String> dialogFM = new ChoiceDialog<>("Choose Course", choices);
+				dialogFM.setTitle("Course Choice Dialog");
+				dialogFM.setHeaderText("Add a Course for " + originalStudent.getfName());
+				dialogFM.setContentText("Add Course:");
+
+				Optional<String> resultMF = dialogFM.showAndWait();
+
+				for (int i = 0; i < coursesBag.getCourses().size(); i++) {
+					if (dialogFM.getSelectedItem().equalsIgnoreCase(
+							coursesBag.getCourses().get(i).toStringForNeeded())) {
+						
+						List<String> grades = new ArrayList<>();
+						grades.add("A");
+						grades.add("B");
+						grades.add("C");
+						grades.add("D");
+						grades.add("F");
+						grades.add("W");
+						
+
+						ChoiceDialog<String> dialogGrades = new ChoiceDialog<>("IP", grades);
+						dialogGrades.setTitle("Course Choice Dialog");
+						dialogGrades.setHeaderText("Add A Grade For " + coursesBag.getCourses().get(i).getCourseName());
+						dialogGrades.setContentText("Grade: ");
+						
+						Optional<String> resultGrade = dialogGrades.showAndWait();
+						
+						// set new student credentials
+						CoursesTaken newCourseTaken = new CoursesTaken(coursesBag.getCourses().get(i).getCourseName(),coursesBag.getCourses().get(i).getCourseNum(),
+								coursesBag.getCourses().get(i).getCoursetype(), coursesBag.getCourses().get(i).getCredits(), 
+								coursesBag.getCourses().get(i).getSubject(), dialogGrades.getResult());
+						
+						originalStudent.getCourses().add(newCourseTaken);
+						break;
+					}
+				}
+
+				mainWindow.createSain();
+				fillFields(mainWindow, originalStudent);
+
+			}
+		});
+		
+	
+
+		// Change Major
+		mainWindow.setChangeMajorButtonListener(new ChangeMajorButtonListener() {
+			@Override
+			public void changeMajorButtonClicked(ChangeMajorButtonEventObject ev) {
+				TextInputDialog dialogFS = new TextInputDialog("Enter ID");
+				dialogFS.setTitle("Search Student");
+				dialogFS.setHeaderText("Please Enter the Student's ID");
+				dialogFS.setContentText("Search ID: ");
+
+				// Traditional way to get the response value.
+				Optional<String> resultFS = dialogFS.showAndWait();
+
+				int id = Integer.parseInt(dialogFS.getResult());
+
+				Student originalStudent = (Student) personbag.searchById(id);
+
+				List<String> choices = new ArrayList<>();
+				for (int i = 0; i < majorBag.getMajors().size(); i++) {
+					choices.add(majorBag.getMajors().get(i).toString());
+				}
+
+				ChoiceDialog<String> dialogFM = new ChoiceDialog<>(originalStudent
+						.getMajor().toString(), choices);
+				dialogFM.setTitle("Major Choice Dialog");
+				dialogFM.setHeaderText("Change " + originalStudent.getfName()
+						+ " to which major?");
+				dialogFM.setContentText("Choose new Major:");
+
+				Optional<String> resultMF = dialogFM.showAndWait();
+
+				for (int i = 0; i < majorBag.getMajors().size(); i++) {
+					if (dialogFM.getSelectedItem().equalsIgnoreCase(
+							majorBag.getMajors().get(i).toString())) {
+						// set new student credentials
+						originalStudent.setMajor(majorBag.getMajors().get(i));
+						originalStudent.setDegree(degreeBag
+								.searchForDegreeByMajor(majorBag.getMajors()
+										.get(i).getName()));
+						originalStudent.setProgram(((String) originalStudent
+								.getMajor().getName() + " " + originalStudent
+								.getDegree().getTitle()));
+						break;
+					}
+				}
+
+				mainWindow.createSain();
+				fillFields(mainWindow, originalStudent);
+
 			}
 		});
 
@@ -203,11 +284,18 @@ public class MainWindowController {
 
 				int id = Integer.parseInt(dialogFS.getResult());
 
-				Student originalStudent =  (Student) personbag.searchById(id);
-				Student newStudent = new Student(originalStudent.getfName(), originalStudent.getlName(), originalStudent.getId(), originalStudent.getUsername(),
-						originalStudent.getPassword(), originalStudent.getPhone(), originalStudent.getAddress(), originalStudent.getCampus(),
-						originalStudent.getProgram(), originalStudent.getDegree(), originalStudent.getMajor(), originalStudent.getCourses(),
-						originalStudent.getCumulativeGpa(), originalStudent.getMajorGPA(), originalStudent.getProgramGPA());
+				Student originalStudent = (Student) personbag.searchById(id);
+				Student newStudent = new Student(originalStudent.getfName(),
+						originalStudent.getlName(), originalStudent.getId(),
+						originalStudent.getUsername(), originalStudent
+								.getPassword(), originalStudent.getPhone(),
+						originalStudent.getAddress(), originalStudent
+								.getCampus(), originalStudent.getProgram(),
+						originalStudent.getDegree(),
+						originalStudent.getMajor(), originalStudent
+								.getCourses(), originalStudent
+								.getCumulativeGpa(), originalStudent
+								.getMajorGPA(), originalStudent.getProgramGPA());
 
 				List<String> choices = new ArrayList<>();
 				for (int i = 0; i < majorBag.getMajors().size(); i++) {
@@ -231,9 +319,109 @@ public class MainWindowController {
 						newStudent.setDegree(degreeBag
 								.searchForDegreeByMajor(majorBag.getMajors()
 										.get(i).getName()));
-						originalStudent.setProgram(((String) newStudent.getMajor()
-								.getName() + " " + newStudent.getDegree()
-								.getTitle()));
+						originalStudent.setProgram(((String) newStudent
+								.getMajor().getName() + " " + newStudent
+								.getDegree().getTitle()));
+						break;
+					}
+				}
+
+				mainWindow.createSain();
+				fillFields(mainWindow, newStudent);
+
+			}
+		});
+	}
+
+	public MainWindowController(PersonBag personbag, MajorBag majorBag,
+			DegreeBag degreeBag, CourseBag coursesBag, MainScreen mainWindow, Faculty facultyModel) {
+		// If you are a Faculty Signing in, this is your Controller
+		createFacultyTaskbar(mainWindow);
+
+		mainWindow.setLogoutButtonListener(new LogoutButtonListener() {
+			@Override
+			public void logoutButtonClicked(LogoutButtonEventObject ev) {
+				mainWindow.getMainStage().close();
+				LoginScreen newloginScreen = new LoginScreen();
+				LoginWindowController controller = new LoginWindowController(
+						personbag, majorBag, degreeBag, coursesBag, newloginScreen);
+			}
+
+		});
+
+		// searchButton
+		mainWindow.setSearchButtonListener(new SearchButtonListener() {
+			@Override
+			public void searchButtonClicked(SearchButtonEventObject ev) {
+				TextInputDialog dialog = new TextInputDialog("Enter ID");
+				dialog.setTitle("Search Student");
+				dialog.setHeaderText("Please Enter the Student's ID");
+				dialog.setContentText("Search ID: ");
+
+				// Traditional way to get the response value.
+				Optional<String> result = dialog.showAndWait();
+
+				int id = Integer.parseInt(dialog.getResult());
+
+				Student originalStudent = (Student) personbag.searchById(id);
+
+				mainWindow.createSain();
+				fillFields(mainWindow, originalStudent);
+			}
+		});
+
+		// What IF
+		mainWindow.setWhatIfButtonListener(new WhatIfButtonListener() {
+			@Override
+			public void whatIfButtonClicked(WhatIfButtonEventObject ev) {
+				TextInputDialog dialogFS = new TextInputDialog("Enter ID");
+				dialogFS.setTitle("Search Student");
+				dialogFS.setHeaderText("Please Enter the Student's ID");
+				dialogFS.setContentText("Search ID: ");
+
+				// Traditional way to get the response value.
+				Optional<String> resultFS = dialogFS.showAndWait();
+
+				int id = Integer.parseInt(dialogFS.getResult());
+
+				Student originalStudent = (Student) personbag.searchById(id);
+				Student newStudent = new Student(originalStudent.getfName(),
+						originalStudent.getlName(), originalStudent.getId(),
+						originalStudent.getUsername(), originalStudent
+								.getPassword(), originalStudent.getPhone(),
+						originalStudent.getAddress(), originalStudent
+								.getCampus(), originalStudent.getProgram(),
+						originalStudent.getDegree(),
+						originalStudent.getMajor(), originalStudent
+								.getCourses(), originalStudent
+								.getCumulativeGpa(), originalStudent
+								.getMajorGPA(), originalStudent.getProgramGPA());
+
+				List<String> choices = new ArrayList<>();
+				for (int i = 0; i < majorBag.getMajors().size(); i++) {
+					choices.add(majorBag.getMajors().get(i).toString());
+				}
+
+				ChoiceDialog<String> dialogFM = new ChoiceDialog<>(newStudent
+						.getMajor().toString(), choices);
+				dialogFM.setTitle("Major Choice Dialog");
+				dialogFM.setHeaderText("Change " + newStudent.getfName()
+						+ " to which major?");
+				dialogFM.setContentText("Choose new Major:");
+
+				Optional<String> resultMF = dialogFM.showAndWait();
+
+				for (int i = 0; i < majorBag.getMajors().size(); i++) {
+					if (dialogFM.getSelectedItem().equalsIgnoreCase(
+							majorBag.getMajors().get(i).toString())) {
+						// set new student credentials
+						newStudent.setMajor(majorBag.getMajors().get(i));
+						newStudent.setDegree(degreeBag
+								.searchForDegreeByMajor(majorBag.getMajors()
+										.get(i).getName()));
+						originalStudent.setProgram(((String) newStudent
+								.getMajor().getName() + " " + newStudent
+								.getDegree().getTitle()));
 						break;
 					}
 				}
@@ -481,7 +669,8 @@ public class MainWindowController {
 				.addAll(mainWindow.getLogoutButton(),
 						mainWindow.getWhatIfButton(),
 						mainWindow.getSearchButton(),
-						mainWindow.getSaveButton());
+						mainWindow.getAddCourseButton(),
+						mainWindow.getChangeMajorButton() );
 		mainWindow.getRoot().setBottom(mainWindow.getBottom());
 	}
 
@@ -496,6 +685,8 @@ public class MainWindowController {
 	}
 
 	public void fillFields(MainScreen window, Student student) {
+		DecimalFormat df = new DecimalFormat(".##");
+		
 		// Regular Sain setting
 		String header = new String("Sain Report for " + student.getfName()
 				+ " " + student.getlName());
@@ -551,6 +742,7 @@ public class MainWindowController {
 		window.setTotalCreditsDegreeShow(Double
 				.toString(calculateTotalCredsDeg(student, student.getCourses())));
 	}
+
 
 	public double calculateTotalCredsDeg(Student student,
 			List<CoursesTaken> list) {
