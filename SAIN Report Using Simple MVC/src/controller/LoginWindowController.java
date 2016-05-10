@@ -1,12 +1,17 @@
 package controller;
 
 
+import java.util.Optional;
+
 import view.LoginButtonEventObject;
 import view.LoginButtonListener;
 import view.LoginScreen;
 import view.MainScreen;
 import view.SainReportButtonEventObject;
 import view.SainReportButtonListener;
+import view.SearchButtonEventObject;
+import view.SearchButtonListener;
+import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 import model.Administrator;
 import model.DegreeBag;
@@ -36,13 +41,25 @@ public class LoginWindowController {
 				
 				} else if (person instanceof Administrator){ // this way the admin wont be confused as a regular Faculty
 					loginWindow.close();
+							TextInputDialog dialog = new TextInputDialog("Enter ID");
+							dialog.setTitle("Search Student");
+							dialog.setHeaderText("Please Enter the Student's ID");
+							dialog.setContentText("Search ID: ");
+
+							// Traditional way to get the response value.
+							Optional<String> result = dialog.showAndWait();
+
+							int id = Integer.parseInt(dialog.getResult());
+
+							Student originalStudent =  new Student();
 					MainScreen main = new MainScreen();
-					MainWindowController mainController = new MainWindowController(personbag, majorBag, degreeBag, main, (Administrator)person, new Student());
+					MainWindowController mainController = new MainWindowController(personbag, majorBag, degreeBag, main, (Administrator)person);
 					
 					} else if (person instanceof Faculty){
+						
 						loginWindow.close();
 						MainScreen main = new MainScreen();
-						MainWindowController mainController = new MainWindowController(personbag, majorBag, degreeBag, main, (Faculty)person, new Student());
+						MainWindowController mainController = new MainWindowController(personbag, majorBag, degreeBag, main, (Faculty)person);
 						}
 			}
 		    });

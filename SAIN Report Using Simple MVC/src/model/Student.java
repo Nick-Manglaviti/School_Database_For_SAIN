@@ -80,7 +80,35 @@ public class Student extends Person {
 	public Student() {
 		// No Argument Constructor
 	}
-
+	
+	
+	public Student clone(Student student) {
+		Student newStudent = new Student(
+				student.getfName(),
+				student.getlName(),
+				student.getId(),
+				student.getUsername(),
+				student.getPassword(),
+				student.getPhone(),
+				student.getAddress(),
+				student.getCampus(),
+				student.getProgram(),
+				student.getDegree(),
+				student.getMajor(),
+				student.getCourses(),
+				student.getCumulativeGpa(),
+				student.getMajorGPA(),
+				student.getProgramGPA());
+		return newStudent;
+		
+	}
+	@Override
+	public String toString() {
+		return "Student [program=" + program + ", degree=" + degree
+				+ ", major=" + major + ", courses=" + courses
+				+ ", cumulativeGpa=" + cumulativeGpa + ", majorGPA=" + majorGPA
+				+ ", programGPA=" + programGPA + "]";
+	}
 	
 	
 	

@@ -18,9 +18,9 @@ public class MainScreen extends Stage {
 	
 	// Root
 	private BorderPane root = new BorderPane();
+	private Stage mainStage = new Stage(); // depending on the person Logged in
 	
 	//Top Pane
-	private VBox topPane = new VBox();
 	private HBox headerBox= new HBox();
 	private HBox infoBox = new HBox();
 	private VBox infoLabelBox = new VBox();
@@ -48,18 +48,20 @@ public class MainScreen extends Stage {
 	private VBox summaryRightTextFieldsBox = new VBox();
 	
 	// Bottom Box
-	private HBox bottom = new HBox();
+	private HBox bottom = new HBox(10);
 	
 	// Buttons 
 	private Button sainReportButton = new Button("Generate Sain Report");
 	private Button searchButton = new Button("Search For Student");
 	private Button saveButton = new Button(" Save changes");
 	private Button whatIfButton = new Button("What If Analysis");
+	private Button logoutButton = new Button("Logout");
 	// Listeners
 	private SainReportButtonListener sainReportButtonListener;
 	private WhatIfButtonListener whatIfButtonListener;
 	private SearchButtonListener searchButtonListener;
-	private SaveButtonListener SaveButtonListener;
+	private SaveButtonListener saveButtonListener;
+	private LogoutButtonListener logoutButtonListener;
 	
 	
 	// Labels
@@ -81,7 +83,6 @@ public class MainScreen extends Stage {
 	private Label minNum = new Label("Minimum Number of Degree Credits: ");
 	private Label totalCredsTakenC = new Label("Total Credits at SCCC");
 	private Label totalCreditsDegree = new Label("Total Credits Toward Degree: ");
-	private Label totalCredsTaken = new Label("Total Credits Taken: ");
 	
 	//TextFields
 	private TextField programT = new TextField();
@@ -96,7 +97,6 @@ public class MainScreen extends Stage {
 	private TextField minNumshow = new TextField();
 	private TextField totalCredsTakenCShow = new TextField();
 	private TextField totalCreditsDegreeShow = new TextField();
-	private TextField totalCredsTakenShow = new TextField();
 	//ListViews
 	private ListView reqCTV = new ListView();
 	private ListView otherCTV = new ListView();
@@ -109,7 +109,6 @@ public class MainScreen extends Stage {
 	
 	public MainScreen() {
 		root = new BorderPane(); // Set the Root, the rest is made by controller 
-		Stage mainStage = new Stage(); // depending on the person Logged in
 		mainStage.setTitle("MySCCC Home Screen");
 		textFieldsResize();
 		centerPane.setPadding(new Insets(10, 10, 10, 10));
@@ -134,15 +133,21 @@ public class MainScreen extends Stage {
 		});
 		
 		searchButton.setOnAction(e -> {
-			WhatIfButtonEventObject ev = new WhatIfButtonEventObject(this);
-			if (whatIfButtonListener != null) {
-				whatIfButtonListener.whatIfButtonClicked(ev);
+			SearchButtonEventObject ev = new SearchButtonEventObject(this);
+			if (searchButtonListener != null) {
+				searchButtonListener.searchButtonClicked(ev);
 			}
 		});
 		saveButton.setOnAction(e -> {
-			WhatIfButtonEventObject ev = new WhatIfButtonEventObject(this);
-			if (whatIfButtonListener != null) {
-				whatIfButtonListener.whatIfButtonClicked(ev);
+			SaveButtonEventObject ev = new SaveButtonEventObject(this);
+			if (saveButtonListener != null) {
+				saveButtonListener.saveButtonClicked(ev);
+			}
+		});
+		logoutButton.setOnAction(e -> {
+			LogoutButtonEventObject ev = new LogoutButtonEventObject(this);
+			if (logoutButtonListener != null) {
+				logoutButtonListener.logoutButtonClicked(ev);
 			}
 		});
 		
@@ -163,7 +168,6 @@ public class MainScreen extends Stage {
 		minNumshow.setDisable(true);
 		totalCredsTakenCShow.setDisable(true);
 		totalCreditsDegreeShow.setDisable(true);
-		totalCredsTakenShow.setDisable(true);
 	}
 
 	
@@ -209,12 +213,14 @@ public class MainScreen extends Stage {
 		ccBox = new VBox();
 		ccBox.getChildren().addAll(currentCT, currentCTV);
 		coursesTakenBox = new HBox();
+		coursesTakenBox.setAlignment(Pos.CENTER);
 		coursesTakenBox.getChildren().addAll(rctBox, octBox, cwfBox, ccBox);
 		// Courses Needed View
 		cnBox = new VBox();
 		cnBox.getChildren().addAll(neededC, neededCV);
 		coursesNeededBox = new HBox();
-		coursesNeededBox.getChildren().addAll(rctBox, octBox, cwfBox, ccBox);
+		coursesNeededBox.setAlignment(Pos.CENTER);
+		coursesNeededBox.getChildren().addAll(cnBox);
 		// Summary View
 		summaryLeftLabelsBox = new VBox(8);
 		summaryLeftLabelsBox.getChildren().addAll(minGPA,totalCreds,minNum);
@@ -223,9 +229,9 @@ public class MainScreen extends Stage {
 		summaryLeftBox = new HBox();
 		summaryLeftBox.getChildren().addAll(summaryLeftLabelsBox, summaryLeftTextFieldsBox);
 		summaryRightLabelsBox = new VBox(8);
-		summaryRightLabelsBox.getChildren().addAll(totalCredsTakenC,totalCreditsDegree,totalCredsTaken);
+		summaryRightLabelsBox.getChildren().addAll(totalCredsTakenC,totalCreditsDegree);
 		summaryRightTextFieldsBox = new VBox();
-		summaryRightTextFieldsBox.getChildren().addAll(totalCredsTakenCShow,totalCreditsDegreeShow,totalCredsTakenShow);
+		summaryRightTextFieldsBox.getChildren().addAll(totalCredsTakenCShow,totalCreditsDegreeShow);
 		summaryRightBox = new HBox();
 		summaryRightBox.getChildren().addAll(summaryRightLabelsBox, summaryRightTextFieldsBox);
 		summaryBox = new HBox();
@@ -238,6 +244,30 @@ public class MainScreen extends Stage {
 	
 	
 
+	public Stage getMainStage() {
+		return mainStage;
+	}
+
+	public void setMainStage(Stage mainStage) {
+		this.mainStage = mainStage;
+	}
+
+	public Button getLogoutButton() {
+		return logoutButton;
+	}
+
+	public void setLogoutButton(Button logoutButton) {
+		this.logoutButton = logoutButton;
+	}
+
+	public LogoutButtonListener getLogoutButtonListener() {
+		return logoutButtonListener;
+	}
+
+	public void setLogoutButtonListener(LogoutButtonListener logoutButtonListener) {
+		this.logoutButtonListener = logoutButtonListener;
+	}
+
 	public SearchButtonListener getSearchButtonListener() {
 		return searchButtonListener;
 	}
@@ -247,11 +277,11 @@ public class MainScreen extends Stage {
 	}
 
 	public SaveButtonListener getSaveButtonListener() {
-		return SaveButtonListener;
+		return saveButtonListener;
 	}
 
 	public void setSaveButtonListener(SaveButtonListener saveButtonListener) {
-		SaveButtonListener = saveButtonListener;
+		saveButtonListener = saveButtonListener;
 	}
 
 	public SainReportButtonListener getSainReportButtonListener() {
@@ -301,17 +331,10 @@ public class MainScreen extends Stage {
 		return totalCreditsDegreeShow;
 	}
 
-	public void setTotalCreditsDegreeShow(String string) {
-		this.totalCreditsDegreeShow.setText(string);
+	public void setTotalCreditsDegreeShow(String sum2) {
+		this.totalCreditsDegreeShow.setText(sum2);
 	}
 
-	public TextField getTotalCredsTakenShow() {
-		return totalCredsTakenShow;
-	}
-
-    public void setTotalCredsTakenShow(String string) {
-		this.totalCredsTakenShow.setText(string);
-	}
 
 	public ListView getNeededCV() {
 		return neededCV;

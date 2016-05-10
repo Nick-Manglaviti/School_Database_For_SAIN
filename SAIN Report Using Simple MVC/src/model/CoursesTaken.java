@@ -2,6 +2,8 @@ package model;
 
 
 
+
+
 public class CoursesTaken extends Course {
 
 	// Data Fields

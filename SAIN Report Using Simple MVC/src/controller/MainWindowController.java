@@ -13,10 +13,12 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.VBox;
 import model.Administrator;
 import model.Course;
 import model.CoursesTaken;
+import model.Degree;
 import model.DegreeBag;
 import model.Faculty;
 import model.Major;
@@ -24,6 +26,9 @@ import model.MajorBag;
 import model.Person;
 import model.PersonBag;
 import model.Student;
+import view.LoginScreen;
+import view.LogoutButtonEventObject;
+import view.LogoutButtonListener;
 import view.MainScreen;
 import view.SainReportButtonEventObject;
 import view.SainReportButtonListener;
@@ -41,56 +46,23 @@ public class MainWindowController {
 		// If you are a Student Signing in, this is your Controller
 		// Bottom "TaskBar" for Student
 		createStudentTaskbar(mainWindow);
+		// STUDENT LOGOUT
+		mainWindow.setLogoutButtonListener(new LogoutButtonListener() {
+			@Override
+			public void logoutButtonClicked(LogoutButtonEventObject ev) {
+				mainWindow.getMainStage().close();
+				LoginScreen newloginScreen = new LoginScreen();
+				LoginWindowController controller = new LoginWindowController(
+						personbag, majorBag, degreeBag, newloginScreen);
+			}
+
+		});
 		// My Sain Report Event Handling
 		mainWindow.setSainReportButtonListener(new SainReportButtonListener() {
 			@Override
 			public void sainReportButtonClicked(SainReportButtonEventObject ev) {
 				// Set Header
-				String header = new String("Sain Report for "
-						+ studentModel.getfName() + " "
-						+ studentModel.getlName());
-				mainWindow.setHeaderL(header);
-
-				mainWindow.setProgramT((studentModel).getProgram());
-				mainWindow.setDegreeT((studentModel).getDegree().getTitle());
-				mainWindow.setMajorT((studentModel).getMajor().getName());
-				mainWindow.setCumulativeGPAT((studentModel).getCumulativeGpa());
-				mainWindow.setPGPAT((studentModel).getProgramGPA());
-				mainWindow.setMGPAT((studentModel).getMajorGPA());
-				mainWindow.setCampusT((studentModel).getCampus());
-				;
-
-				ObservableList<String> items1 = FXCollections
-						.observableArrayList(checkIfRequired(studentModel,
-								(studentModel).getCourses()));
-				mainWindow.getReqCTV().setItems(items1);
-
-				ObservableList<String> items2 = FXCollections
-						.observableArrayList(checkIfOther(studentModel,
-								(studentModel).getCourses()));
-				mainWindow.getOtherCTV().setItems(items2);
-
-				ObservableList<String> items3 = FXCollections
-						.observableArrayList(checkIfWithdrawn(studentModel,
-								(studentModel).getCourses()));
-				mainWindow.getWithdrawCTV().setItems(items3);
-
-				ObservableList<String> items4 = FXCollections
-						.observableArrayList(checkIfCurrent(studentModel,
-								(studentModel).getCourses()));
-				mainWindow.getCurrentCTV().setItems(items4);
-
-				ObservableList<String> items5 = FXCollections
-						.observableArrayList(checkIfNeeded(studentModel,
-								(studentModel).getCourses()));
-				mainWindow.getNeededCV().setItems(items5);
-
-				mainWindow.setMinGPAshow((studentModel).getMajor().getMinGPA());
-				mainWindow.setTotalCredsshow((studentModel).getMajor()
-						.getTotalCredit());
-				mainWindow.setMinNumshow((studentModel).getDegree()
-						.getMinDegreeCred());
-				mainWindow.disableTextFields();
+				fillFields(mainWindow, studentModel);
 				mainWindow.createSain();
 			}
 
@@ -99,76 +71,37 @@ public class MainWindowController {
 		mainWindow.setWhatIfButtonListener(new WhatIfButtonListener() {
 			@Override
 			public void whatIfButtonClicked(WhatIfButtonEventObject ev) {
-				Student tempPerson = new Student();
-				tempPerson = studentModel;
-				
+				Student tempStudent = new Student().clone(studentModel);
+
 				List<String> choices = new ArrayList<>();
-				for(int i = 0; i < majorBag.getMajors().size(); i++) {
+				for (int i = 0; i < majorBag.getMajors().size(); i++) {
 					choices.add(majorBag.getMajors().get(i).toString());
 				}
-				
-				ChoiceDialog<String> dialog = new ChoiceDialog<>( tempPerson.getMajor().toString(), choices);
+
+				ChoiceDialog<String> dialog = new ChoiceDialog<>(tempStudent
+						.getMajor().toString(), choices);
 				dialog.setTitle("Major Choice Dialog");
 				dialog.setHeaderText("Majors");
 				dialog.setContentText("Choose your new Major:");
-				
+
 				Optional<String> result = dialog.showAndWait();
-				
-				for(int i = 0; i < majorBag.getMajors().size(); i++) {
-					if(dialog.getSelectedItem().equalsIgnoreCase(majorBag.getMajors().get(i).toString())) {
-						tempPerson.setMajor(majorBag.getMajors().get(i));
+
+				for (int i = 0; i < majorBag.getMajors().size(); i++) {
+					if (dialog.getSelectedItem().equalsIgnoreCase(
+							majorBag.getMajors().get(i).toString())) {
+						// set new student credentials
+						tempStudent.setMajor(majorBag.getMajors().get(i));
+						tempStudent.setDegree(degreeBag
+								.searchForDegreeByMajor(majorBag.getMajors()
+										.get(i).getName()));
+						tempStudent.setProgram(((String) tempStudent.getMajor()
+								.getName() + " " + tempStudent.getDegree()
+								.getTitle()));
 						break;
 					}
 				}
-				
-				
-				
-				// Regular Sain setting
-				String header = new String("Sain Report for "
-						+ studentModel.getfName() + " "
-						+ studentModel.getlName());
-				mainWindow.setHeaderL(header);
 
-				mainWindow.setProgramT((tempPerson).getProgram());
-				mainWindow.setDegreeT((tempPerson).getDegree().getTitle());
-				mainWindow.setMajorT((tempPerson).getMajor().getName());
-				mainWindow.setCumulativeGPAT((tempPerson).getCumulativeGpa());
-				mainWindow.setPGPAT((tempPerson).getProgramGPA());
-				mainWindow.setMGPAT((tempPerson).getMajorGPA());
-				mainWindow.setCampusT((tempPerson).getCampus());
-				;
-
-				ObservableList<String> items1 = FXCollections
-						.observableArrayList(checkIfRequired(tempPerson,
-								(tempPerson).getCourses()));
-				mainWindow.getReqCTV().setItems(items1);
-
-				ObservableList<String> items2 = FXCollections
-						.observableArrayList(checkIfOther(tempPerson,
-								(tempPerson).getCourses()));
-				mainWindow.getOtherCTV().setItems(items2);
-
-				ObservableList<String> items3 = FXCollections
-						.observableArrayList(checkIfWithdrawn(tempPerson,
-								(tempPerson).getCourses()));
-				mainWindow.getWithdrawCTV().setItems(items3);
-
-				ObservableList<String> items4 = FXCollections
-						.observableArrayList(checkIfCurrent(tempPerson,
-								(studentModel).getCourses()));
-				mainWindow.getCurrentCTV().setItems(items4);
-
-				ObservableList<String> items5 = FXCollections
-						.observableArrayList(checkIfNeeded(tempPerson,
-								(tempPerson).getCourses()));
-				mainWindow.getNeededCV().setItems(items5);
-
-				mainWindow.setMinGPAshow((tempPerson).getMajor().getMinGPA());
-				mainWindow.setTotalCredsshow((tempPerson).getMajor()
-						.getTotalCredit());
-				mainWindow.setMinNumshow((tempPerson).getDegree()
-						.getMinDegreeCred());
-				mainWindow.disableTextFields();
+				fillFields(mainWindow, tempStudent);
 				mainWindow.createSain();
 
 			}
@@ -177,25 +110,139 @@ public class MainWindowController {
 
 	public MainWindowController(PersonBag personbag, MajorBag majorBag,
 			DegreeBag degreeBag, MainScreen mainWindow,
-			Administrator admminModel, Student studentModel) {
+			Administrator adminModel) {
 		// If you are a Administrator Signing in, this is your Controller
 		// Bottom "TaskBar" for Student
 		createAdminTaskbar(mainWindow);
 
-		// What If Event Handling
+		mainWindow.setLogoutButtonListener(new LogoutButtonListener() {
+			@Override
+			public void logoutButtonClicked(LogoutButtonEventObject ev) {
+				mainWindow.getMainStage().close();
+				LoginScreen newloginScreen = new LoginScreen();
+				LoginWindowController controller = new LoginWindowController(
+						personbag, majorBag, degreeBag, newloginScreen);
+			}
+
+		});
+
+		// searchButton
 		mainWindow.setSearchButtonListener(new SearchButtonListener() {
 			@Override
 			public void searchButtonClicked(SearchButtonEventObject ev) {
-				
+				TextInputDialog dialog = new TextInputDialog("Enter ID");
+				dialog.setTitle("Search Student");
+				dialog.setHeaderText("Please Enter the Student's ID");
+				dialog.setContentText("Search ID: ");
+
+				// Traditional way to get the response value.
+				Optional<String> result = dialog.showAndWait();
+
+				int id = Integer.parseInt(dialog.getResult());
+
+				Student newStudent = (Student) personbag.searchById(id);
+	
+				mainWindow.createSain();
+				fillFields(mainWindow, newStudent);
+
+				System.out.println(newStudent.toString());
+
 			}
 		});
 	}
 
 	public MainWindowController(PersonBag personbag, MajorBag majorBag,
-			DegreeBag degreeBag, MainScreen mainWindow, Faculty facultyModel,
-			Student studentModel) {
-		// If you are a Administrator Signing in, this is your Controller
+			DegreeBag degreeBag, MainScreen mainWindow, Faculty facultyModel) {
+		// If you are a Faculty Signing in, this is your Controller
+		createFacultyTaskbar(mainWindow);
 
+		mainWindow.setLogoutButtonListener(new LogoutButtonListener() {
+			@Override
+			public void logoutButtonClicked(LogoutButtonEventObject ev) {
+				mainWindow.getMainStage().close();
+				LoginScreen newloginScreen = new LoginScreen();
+				LoginWindowController controller = new LoginWindowController(
+						personbag, majorBag, degreeBag, newloginScreen);
+			}
+
+		});
+
+		// searchButton
+		mainWindow.setSearchButtonListener(new SearchButtonListener() {
+			@Override
+			public void searchButtonClicked(SearchButtonEventObject ev) {
+				TextInputDialog dialog = new TextInputDialog("Enter ID");
+				dialog.setTitle("Search Student");
+				dialog.setHeaderText("Please Enter the Student's ID");
+				dialog.setContentText("Search ID: ");
+
+				// Traditional way to get the response value.
+				Optional<String> result = dialog.showAndWait();
+
+				int id = Integer.parseInt(dialog.getResult());
+
+				Student originalStudent =  (Student) personbag.searchById(id);
+				
+				
+				mainWindow.createSain();
+				fillFields(mainWindow, originalStudent);
+			}
+		});
+
+		// What IF
+		mainWindow.setWhatIfButtonListener(new WhatIfButtonListener() {
+			@Override
+			public void whatIfButtonClicked(WhatIfButtonEventObject ev) {
+				TextInputDialog dialogFS = new TextInputDialog("Enter ID");
+				dialogFS.setTitle("Search Student");
+				dialogFS.setHeaderText("Please Enter the Student's ID");
+				dialogFS.setContentText("Search ID: ");
+
+				// Traditional way to get the response value.
+				Optional<String> resultFS = dialogFS.showAndWait();
+
+				int id = Integer.parseInt(dialogFS.getResult());
+
+				Student originalStudent =  (Student) personbag.searchById(id);
+				Student newStudent = new Student(originalStudent.getfName(), originalStudent.getlName(), originalStudent.getId(), originalStudent.getUsername(),
+						originalStudent.getPassword(), originalStudent.getPhone(), originalStudent.getAddress(), originalStudent.getCampus(),
+						originalStudent.getProgram(), originalStudent.getDegree(), originalStudent.getMajor(), originalStudent.getCourses(),
+						originalStudent.getCumulativeGpa(), originalStudent.getMajorGPA(), originalStudent.getProgramGPA());
+
+				List<String> choices = new ArrayList<>();
+				for (int i = 0; i < majorBag.getMajors().size(); i++) {
+					choices.add(majorBag.getMajors().get(i).toString());
+				}
+
+				ChoiceDialog<String> dialogFM = new ChoiceDialog<>(newStudent
+						.getMajor().toString(), choices);
+				dialogFM.setTitle("Major Choice Dialog");
+				dialogFM.setHeaderText("Change " + newStudent.getfName()
+						+ " to which major?");
+				dialogFM.setContentText("Choose new Major:");
+
+				Optional<String> resultMF = dialogFM.showAndWait();
+
+				for (int i = 0; i < majorBag.getMajors().size(); i++) {
+					if (dialogFM.getSelectedItem().equalsIgnoreCase(
+							majorBag.getMajors().get(i).toString())) {
+						// set new student credentials
+						newStudent.setMajor(majorBag.getMajors().get(i));
+						newStudent.setDegree(degreeBag
+								.searchForDegreeByMajor(majorBag.getMajors()
+										.get(i).getName()));
+						originalStudent.setProgram(((String) newStudent.getMajor()
+								.getName() + " " + newStudent.getDegree()
+								.getTitle()));
+						break;
+					}
+				}
+
+				mainWindow.createSain();
+				fillFields(mainWindow, newStudent);
+
+			}
+		});
 	}
 
 	//
@@ -207,26 +254,24 @@ public class MainWindowController {
 			List<CoursesTaken> list) {
 		// put the real into a temporary list that will remove items when taken
 		List<CoursesTaken> tempList = new ArrayList<CoursesTaken>(list);
+
 		ArrayList<String> returnList = new ArrayList<String>();
 
-		List<Course> majorCourses = new ArrayList<Course>(); // array of courses
-																// in the major
-		majorCourses = student.getMajor().getCoursesList();
+		List<Course> majorCourses = new ArrayList<Course>(student.getMajor()
+				.getCoursesList()); // array of courses
 
-		List<String> majorTypes = new ArrayList<String>(); // array of subject
-															// that are in the
-															// major
-		majorTypes = student.getMajor().getTypesArray();
+		List<String> majorTypes = new ArrayList<String>(student.getMajor()
+				.getTypesArray()); // array of subject
 
+		double sum = 0;
 		// Check if the course is directly required
 		for (int i = 0; i < tempList.size(); i++) {
-			String name = tempList.get(i).getCourseName();
-			// Get a course name for students course
 			for (int j = 0; j < majorCourses.size(); j++) {
-				if (name.equalsIgnoreCase(majorCourses.get(j).getCourseName())) {
-					String majorRequired = (student.getMajor().getName() + " Major Required");
-					tempList.get(i).setCoursetype(majorRequired);
-					returnList.add(tempList.get(i).toStringForRequired());
+				if (tempList.get(i).getCourseName()
+						.equalsIgnoreCase(majorCourses.get(j).getCourseName())) {
+					returnList.add(tempList.get(i).toStringForRequired()
+							+ "Major Required");
+					sum += tempList.get(i).getCredits();
 					tempList.remove(i);
 					break;
 				}
@@ -234,18 +279,18 @@ public class MainWindowController {
 		}
 		// Check if the course is an elective subject
 		for (int i = 0; i < tempList.size(); i++) {
-			// get a course name for students course
-			String name = tempList.get(i).getCoursetype();
 			for (int j = 0; j < majorTypes.size(); j++) {
-				if (name.equalsIgnoreCase(majorTypes.get(j))) {
-					String majorElective = (majorTypes.get(j));
-					tempList.get(i).setCoursetype(majorElective);
-					returnList.add(tempList.get(i).toStringForRequired());
+				if (tempList.get(i).getCoursetype()
+						.equalsIgnoreCase(majorTypes.get(j))) {
+					returnList.add(tempList.get(i).toStringForRequired()
+							+ " Elective");
+					sum += tempList.get(i).getCredits();
 					tempList.remove(i);
 					break;
 				}
 			}
 		}
+
 		return returnList;
 	}
 
@@ -255,18 +300,57 @@ public class MainWindowController {
 	public ArrayList<String> checkIfOther(Student student,
 			List<CoursesTaken> list) {
 
-		List<CoursesTaken> tempList = new ArrayList<CoursesTaken>(list);
+		// put the real into a temporary list that will remove items when taken
+		List<CoursesTaken> tempList = new ArrayList<CoursesTaken>();
+		for (int i = 0; i < list.size(); i++) {
+			tempList.add(list.get(i));
+		}
 		ArrayList<String> returnList = new ArrayList<String>();
-		String name = "Other";
 
-		// Check if the course is an Other
+		List<Course> majorCourses = new ArrayList<Course>(); // array of courses
+		for (int i = 0; i < student.getMajor().getCoursesList().size(); i++) {
+			majorCourses.add(student.getMajor().getCoursesList().get(i));
+
+		}
+
+		List<String> majorTypes = new ArrayList<String>(student.getMajor()
+				.getTypesArray()); // array of subject
+		for (int i = 0; i < student.getMajor().getTypesArray().size(); i++) {
+			majorTypes.add(student.getMajor().getTypesArray().get(i));
+
+		}
+
 		for (int i = 0; i < tempList.size(); i++) {
-			if (name.equalsIgnoreCase(tempList.get(i).getCoursetype())) {
+			// Check if a name matches
+			for (int j = 0; j < majorCourses.size(); j++) {
+				if (tempList.get(i).getCourseName()
+						.equals(majorCourses.get(j).getCourseName())) {
+					tempList.remove(i);
+					break;
+				}
+			}
+		}
+		for (int i = 0; i < tempList.size(); i++) {
+			// Check if the Subjects matches
+			for (int j = 0; j < majorTypes.size(); j++) {
+				if (tempList.get(i).getCoursetype()
+						.equalsIgnoreCase(majorTypes.get(j))) {
+					tempList.remove(i);
+					break;
+				}
+			}
+		}
+		// Check if the course is an IP
+		String name = "IP";
+		for (int i = 0; i < tempList.size(); i++) {
+			if (name.equalsIgnoreCase(tempList.get(i).getGrade())) {
 				returnList.add(tempList.get(i).toStringForOther());
 				tempList.remove(i);
-				break;
 			}
-
+		}
+		// Put into the return list with proper toString
+		for (int i = 0; i < tempList.size(); i++) {
+			returnList.add(i, tempList.get(i).toStringForOther());
 		}
 		return returnList;
 	}
@@ -277,7 +361,11 @@ public class MainWindowController {
 	public ArrayList<String> checkIfWithdrawn(Student student,
 			List<CoursesTaken> list) {
 		// put the real into a temporary list that will remove items when taken
-		List<CoursesTaken> tempList = new ArrayList<CoursesTaken>(list);
+		List<CoursesTaken> tempList = new ArrayList<CoursesTaken>();
+		for (int i = 0; i < list.size(); i++) {
+			tempList.add(list.get(i));
+		}
+
 		ArrayList<String> returnList = new ArrayList<String>();
 		String grade1 = "W";
 		String grade2 = "F";
@@ -285,13 +373,10 @@ public class MainWindowController {
 		for (int i = 0; i < tempList.size(); i++) {
 			if (grade1.equalsIgnoreCase(tempList.get(i).getGrade())) {
 				returnList.add(tempList.get(i).toStringForOther());
-				tempList.remove(i);
-				break;
 			} // Check If F
-			if (grade2.equalsIgnoreCase(tempList.get(i).getGrade())) {
+			else if (grade2.equalsIgnoreCase(tempList.get(i).getGrade())) {
 				returnList.add(tempList.get(i).toStringForOther());
 				tempList.remove(i);
-				break;
 			}
 
 		}
@@ -304,15 +389,15 @@ public class MainWindowController {
 			List<CoursesTaken> list) {
 		// put the real into a temporary list that will remove items when taken
 		List<CoursesTaken> tempList = new ArrayList<CoursesTaken>(list);
+
 		ArrayList<String> returnList = new ArrayList<String>();
 		String name = "IP";
 
 		// Check if the course is an IP
 		for (int i = 0; i < tempList.size(); i++) {
 			if (name.equalsIgnoreCase(tempList.get(i).getGrade())) {
-				returnList.add(tempList.get(i).toStringForOther());
+				returnList.add(tempList.get(i).toStringForCurrent());
 				tempList.remove(i);
-				break;
 			}
 		}
 		return returnList;
@@ -324,29 +409,37 @@ public class MainWindowController {
 	public ArrayList<String> checkIfNeeded(Student student,
 			List<CoursesTaken> list) {
 		// put the real into a temporary list that will remove items when taken
-		List<CoursesTaken> tempList = new ArrayList<CoursesTaken>(list);
+		List<CoursesTaken> tempList = new ArrayList<CoursesTaken>();
+		for (int i = 0; i < list.size(); i++) {
+			tempList.add(list.get(i));
+		}
 		ArrayList<String> returnList = new ArrayList<String>();
 
-		List<Course> majorCourses = new ArrayList<Course>(); // array of courses
-																// in the major
-		majorCourses = student.getMajor().getCoursesList();
+		List<Course> tempMajorCourses = new ArrayList<Course>(student
+				.getMajor().getCoursesList()); // array of courses
+												// in the major
 
-		List<String> majorTypes = new ArrayList<String>(); // array of subject
-															// that are in the
-															// major
-		majorTypes = student.getMajor().getTypesArray();
+		List<String> tempMajorTypes = new ArrayList<String>(student.getMajor()
+				.getTypesArray()); // array of subject
+		// that are in the
+		// major
 
 		// Check if the course is directly required
 		for (int i = 0; i < tempList.size(); i++) {
 			String name = tempList.get(i).getCourseName();
 			// Get a course name for students course
-			for (int j = 0; j < majorCourses.size(); j++) {
-				if (!name.equalsIgnoreCase(majorCourses.get(j).getCourseName())) {
-					returnList.add(majorCourses.get(j).toStringForNeeded());
+			for (int j = 0; j < tempMajorCourses.size(); j++) {
+				if (name.equalsIgnoreCase(tempMajorCourses.get(j)
+						.getCourseName())) {
+					tempMajorCourses.remove(j);
 					tempList.remove(i);
 					break;
 				}
 			}
+		}
+		// Add the Courses Directly Needed
+		for (int i = 0; i < tempMajorCourses.size(); i++) {
+			returnList.add(i, tempMajorCourses.get(i).toStringForNeeded());
 		}
 		// Check if the course is an elective subject
 		for (int i = 0; i < tempList.size(); i++) {
@@ -355,20 +448,19 @@ public class MainWindowController {
 															// for students
 															// course
 
-			for (int j = 0; j < majorTypes.size(); j++) {
-				if (!name.equalsIgnoreCase(majorTypes.get(j))) {
-					returnList.add(majorCourses.get(j).toStringForNeeded());
+			for (int j = 0; j < tempMajorTypes.size(); j++) {
+				if (name.equalsIgnoreCase(tempMajorTypes.get(j))) {
+					tempMajorTypes.remove(j);
 					tempList.remove(i);
 					break;
 				}
 			}
 		}
+		// Add the Courses Directly Needed
+		for (int i = 0; i < tempMajorTypes.size(); i++) {
+			returnList.add(i, tempMajorTypes.get(i).toString() + " Elective");
+		}
 		return returnList;
-	}
-
-	// Find Total Credits Taken at SCC
-	public double totalCredsAtSCCC(Student student, List<CoursesTaken> list) {
-		return 0;
 	}
 
 	// Create Taskbars
@@ -376,7 +468,8 @@ public class MainWindowController {
 		mainWindow
 				.getBottom()
 				.getChildren()
-				.addAll(mainWindow.getSainReportButton(),
+				.addAll(mainWindow.getLogoutButton(),
+						mainWindow.getSainReportButton(),
 						mainWindow.getWhatIfButton());
 		mainWindow.getRoot().setBottom(mainWindow.getBottom());
 	}
@@ -385,7 +478,7 @@ public class MainWindowController {
 		mainWindow
 				.getBottom()
 				.getChildren()
-				.addAll(mainWindow.getSainReportButton(),
+				.addAll(mainWindow.getLogoutButton(),
 						mainWindow.getWhatIfButton(),
 						mainWindow.getSearchButton(),
 						mainWindow.getSaveButton());
@@ -396,10 +489,111 @@ public class MainWindowController {
 		mainWindow
 				.getBottom()
 				.getChildren()
-				.addAll(mainWindow.getSainReportButton(),
+				.addAll(mainWindow.getLogoutButton(),
 						mainWindow.getWhatIfButton(),
 						mainWindow.getSearchButton());
 		mainWindow.getRoot().setBottom(mainWindow.getBottom());
+	}
+
+	public void fillFields(MainScreen window, Student student) {
+		// Regular Sain setting
+		String header = new String("Sain Report for " + student.getfName()
+				+ " " + student.getlName());
+		window.setHeaderL(header);
+
+		window.setProgramT((student).getProgram());
+		window.setDegreeT((student).getDegree().getTitle());
+		window.setMajorT((student).getMajor().getName());
+		window.setCumulativeGPAT((student).getCumulativeGpa());
+		window.setPGPAT((student).getProgramGPA());
+		window.setMGPAT((student).getMajorGPA());
+		window.setCampusT((student).getCampus());
+		;
+
+		ObservableList<String> items1 = FXCollections
+				.observableArrayList(checkIfRequired(student,
+						(student).getCourses()));
+		window.getReqCTV().setItems(items1);
+
+		ObservableList<String> items2 = FXCollections
+				.observableArrayList(checkIfOther(student,
+						(student).getCourses()));
+		window.getOtherCTV().setItems(items2);
+
+		ObservableList<String> items3 = FXCollections
+				.observableArrayList(checkIfWithdrawn(student,
+						(student).getCourses()));
+		window.getWithdrawCTV().setItems(items3);
+
+		ObservableList<String> items4 = FXCollections
+				.observableArrayList(checkIfCurrent(student,
+						(student).getCourses()));
+		window.getCurrentCTV().setItems(items4);
+
+		ObservableList<String> items5 = FXCollections
+				.observableArrayList(checkIfNeeded(student,
+						(student).getCourses()));
+		window.getNeededCV().setItems(items5);
+
+		window.setMinGPAshow((student).getMajor().getMinGPA());
+		window.setTotalCredsshow((student).getMajor().getTotalCredit());
+		window.setMinNumshow((student).getDegree().getMinDegreeCred());
+		window.disableTextFields();
+		double sum = 0;
+		for (int i = 0; i < student.getCourses().size(); i++) {
+			if (student.getCourses().get(i).getGrade().equals("W")) {
+
+			} else {
+				sum = student.getCourses().get(i).getCredits() + sum;
+			}
+		}
+		window.setTotalCredsTakenCShow(Double.toString(sum));
+		window.setTotalCreditsDegreeShow(Double
+				.toString(calculateTotalCredsDeg(student, student.getCourses())));
+	}
+
+	public double calculateTotalCredsDeg(Student student,
+			List<CoursesTaken> list) {
+		// put the real into a temporary list that will remove items when taken
+		List<CoursesTaken> tempList = new ArrayList<CoursesTaken>(list);
+
+		ArrayList<String> returnList = new ArrayList<String>();
+
+		List<Course> majorCourses = new ArrayList<Course>(student.getMajor()
+				.getCoursesList()); // array of courses
+
+		List<String> majorTypes = new ArrayList<String>(student.getMajor()
+				.getTypesArray()); // array of subject
+
+		double sum = 0;
+		// Check if the course is directly required
+		for (int i = 0; i < tempList.size(); i++) {
+			for (int j = 0; j < majorCourses.size(); j++) {
+				if (tempList.get(i).getCourseName()
+						.equalsIgnoreCase(majorCourses.get(j).getCourseName())) {
+					sum = tempList.get(i).getCredits() + sum;
+					returnList.add(tempList.get(i).toStringForRequired()
+							+ "Major Required");
+					tempList.remove(i);
+					break;
+				}
+			}
+		}
+		// Check if the course is an elective subject
+		for (int i = 0; i < tempList.size(); i++) {
+			for (int j = 0; j < majorTypes.size(); j++) {
+				if (tempList.get(i).getCoursetype()
+						.equalsIgnoreCase(majorTypes.get(j))) {
+					sum = tempList.get(i).getCredits() + sum;
+					returnList.add(tempList.get(i).toStringForRequired()
+							+ " Elective");
+					tempList.remove(i);
+					break;
+				}
+			}
+		}
+
+		return sum;
 	}
 
 }
