@@ -584,7 +584,7 @@ public class MainWindowController {
 		// Check if the course is an IP
 		for (int i = 0; i < tempList.size(); i++) {
 			if (name.equalsIgnoreCase(tempList.get(i).getGrade())) {
-				returnList.add(tempList.get(i).toStringForCurrent());
+				returnList.add(tempList.get(i).toStringForOther());
 				tempList.remove(i);
 			}
 		}
